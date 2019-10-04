@@ -238,7 +238,7 @@ let signInFn = (req,res) => {
     .then((resolve)=>{
             let response = apiResponse.generate(false, 'Login Successful', 200, resolve);
             res.status(200);
-            console.log(response);
+            // console.log(response);
             res.send(response);
     }).catch((err)=>{
         console.log(err);
@@ -296,7 +296,7 @@ let getAllData = (req,res) => {
     let resetPassword = (req,res) =>{
 
         let validateEmail = () =>{
-            console.log(req.body);
+            // console.log(req.body);
         return new Promise((resolve,reject)=>{
        
         userModal.find({email:req.body.email})
@@ -377,10 +377,10 @@ let getAllData = (req,res) => {
 
 
     let getUserId = (req,res) =>{
-        console.log(req.body.name);
+        // console.log(req.body.name);
         userModal.find({username:req.body.name})
             .exec((err,result)=>{
-            console.log(result);
+            // console.log(result);
             if(err){
                 let response = apiResponse.generate(true,'Fetch user data error',500,null);
                 res.send(response);
@@ -398,7 +398,7 @@ let getAllData = (req,res) => {
     let getUsersList = (req,res) =>{
         userModal.find()
             .exec((err,result)=>{
-            console.log(result);
+            // console.log(result);
             if(err){
                 let response = apiResponse.generate(true,'Fetch user data error',500,null);
                 res.send(response);
@@ -417,7 +417,7 @@ let getAllData = (req,res) => {
     let UpdateNewPassword = (req,res) => {
       
             let verifyToken = () =>{
-                console.log(req.body);
+                // console.log(req.body);
             return new Promise((resolve,reject)=>{
              tokenLib.verifyWithoutSecret(req.body.token,(err,userData)=>{
             if(err){

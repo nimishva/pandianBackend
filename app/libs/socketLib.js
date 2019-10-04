@@ -24,11 +24,11 @@ let setServer = (server)=>{
    myIo.on('connection',socket=>{
 
     socket.rooms = "resfeber"
-    console.log('socket Initialised');
+    // console.log('socket Initialised');
     socket.emit('verifyUser','');
 
     socket.on('setUser',authToken => {
-        console.log('SetUser Called')
+        // console.log('SetUser Called')
         tokenLib.verifyWithoutSecret(authToken,(err,tokenData)=>{
             if(err){
               socket.emit('token-error',{status:403,message:'Token not valid/expired'});
@@ -99,7 +99,7 @@ let setServer = (server)=>{
     }); //Updating event
 
     socket.on('delete-event',(eventData)=>{
-      console.log(eventData);
+      // console.log(eventData);
        eventModel.remove({eventId:eventData.eventId})
         .exec((err,result)=>{
         if(err){

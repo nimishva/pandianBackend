@@ -32,7 +32,7 @@ let createNewEvent = (req,res)=>{
 
     newEvent.save((err,result)=>{
         if(err){
-            console.log(err);
+            // console.log(err);
             logger.error("Data base error","eventsCon:createNewEvent",10);
             let response = apiResponse.generate(true,'Event creation error,',500,null);
             res.send(response);
@@ -40,7 +40,7 @@ let createNewEvent = (req,res)=>{
             logger.info("Event Created","eventsCon:createNewEvent",1);
             let newEventObj = result.toObject();
             let response = apiResponse.generate(false,'Event created',200,newEventObj);
-            console.log(response);
+            // console.log(response);
             socketLib.newEventNotify(newEventObj);
             res.send(response);
         }
