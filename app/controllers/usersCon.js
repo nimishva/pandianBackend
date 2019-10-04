@@ -435,6 +435,9 @@ let getAllData = (req,res) => {
 
         let UpdatePassword = (userData) =>{
             return new Promise((resolve,reject)=>{
+
+                let newpassword = passwordLib.hashpassword(userData.newpass);
+
                 userModal.updateOne({},{password:userData.newpass})
                 .exec((err,result)=>{
                 if(err){
