@@ -438,7 +438,7 @@ let getAllData = (req,res) => {
 
                 let newpassword = passwordLib.hashpassword(userData.newpass);
 
-                userModal.updateOne({},{password:userData.newpass})
+                userModal.updateOne({},{password:newpassword})
                 .exec((err,result)=>{
                 if(err){
                     let response = apiResponse.generate(true,'Password updation error,try again',403,null);
