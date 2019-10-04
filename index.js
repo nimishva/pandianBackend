@@ -20,15 +20,10 @@ app.use(cookieParser());
 
 
 app.all('*', function(req, res, next) {
-    res.header("Access-Control-Allow-Origin", "*");
-    next();
-});
-
-app.options("/*", function(req, res, next) {
-    res.header('Access-Control-Allow-Origin', '*');
-    res.header('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,OPTIONS');
-    res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization, Content-Length, X-Requested-With');
-    res.sendStatus(200);
+  res.header("Access-Control-Allow-Origin", "*");
+  res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+  res.header('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE')
+  next();
 });
 
 //Boostrapping all models 
@@ -96,5 +91,39 @@ function onError(error) {
     logger.info('server listening on port' + addr.port, 'serverOnListeningHandler', 10);
     let db = mongoose.connect(appConfig.db.uri,{ useNewUrlParser: true ,'useCreateIndex': true,useUnifiedTopology: true});
   }
+
+  process.on('unhandledRejection', (reason, p) => {
+    console.log('Unhandled Rejection at: Promise', p, 'reason:', reason);
+    // application specific logging, throwing an error, or other logic here
+  });
+  
+  
+  /**
+   * database connection settings
+   */
+  mongoose.connection.on('error', function (err) {
+    console.log('database connection error');
+    console.log(err)
+    logger.error(err,
+      'mongoose connection on error handler', 10)
+    //process.exit(1)
+  }); // end mongoose connection error
+  
+  mongoose.connection.on('open', function (err) {
+    if (err) {
+      console.log("database error");
+      console.log(err);
+      logger.error(err, 'mongoose connection open handler', 10)
+    } else {
+      console.log("database connection open success");
+      logger.info("database connection open",
+        'database connection open handler', 10)
+    }
+    //process.exit(1)
+  }); // enr mongoose connection open handler
+  
+  
+  
+  // end socketio connection handler
 
 module.exports = app;
