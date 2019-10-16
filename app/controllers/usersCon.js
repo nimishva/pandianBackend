@@ -435,10 +435,10 @@ let getAllData = (req,res) => {
 
         let UpdatePassword = (userData) =>{
             return new Promise((resolve,reject)=>{
-
+               // console.log(userData.data);
                 let newpassword = passwordLib.hashpassword(userData.newpass);
 
-                userModal.updateOne({},{password:newpassword})
+                userModal.update({userId:userData.data[0].userId},{$set:{password:newpassword}})
                 .exec((err,result)=>{
                 if(err){
                     let response = apiResponse.generate(true,'Password updation error,try again',403,null);
@@ -447,6 +447,7 @@ let getAllData = (req,res) => {
                     let response = apiResponse.generate(true,'Password updation error,try again',403,null);
                     reject(response);
                 }else{
+                    //console.log(result);
                   resolve(result);
                } //If else statement
         
