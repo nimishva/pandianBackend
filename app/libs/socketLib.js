@@ -15,8 +15,8 @@ const checkLib = require('./checkLib');
 const events   = require('events');
 const shortId  = require('shortid'); 
 const myEvents = new events.EventEmitter();
-let setServer = (server)=>{
-  
+
+let setServer = (server)=>{  
   let newEventData;
   let io        = socketio.listen(server);
   let myIo      = io.of('');

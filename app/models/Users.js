@@ -20,7 +20,11 @@ let userSchema = new Schema ( {
              default     : "",
     
         },
+        userType : {
 
+             type        : String,
+             default     : ""
+        },
         password  : {
 
              type        : String,
@@ -35,7 +39,7 @@ let userSchema = new Schema ( {
 
         },
 
-        lastName   : {
+        fatherName   : {
 
              type        : String,
              default     : "",
@@ -61,6 +65,25 @@ let userSchema = new Schema ( {
             type:Date,
             default:timeLib.now()
 
+          },
+
+          additionalData :{
+               dob : {
+                    type : Date
+               },
+               adharCard : {
+                    type : Number
+               },
+               accountNo : {
+                    type : Number
+               }
+          },
+
+          reference : {
+               type : String
+          },
+          entrySide : {
+               type : String
           }
 
 });

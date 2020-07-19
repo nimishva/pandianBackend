@@ -59,8 +59,7 @@ function onError(error) {
       logger.error(error.code + ' not equal listen', 'serverOnErrorHandler', 10)
       throw error;
     }
-  
-  
+    
     // handle specific listen errors with friendly messages
     switch (error.code) {
       case 'EACCES':

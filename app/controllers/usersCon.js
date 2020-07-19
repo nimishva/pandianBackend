@@ -53,6 +53,7 @@ let checkEmailAvailability = () =>{
                     userId          : shortId.generate(),
                     username        : req.body.username,
                     password        : passwordLib.hashpassword(req.body.password),
+                    userType        : req.body.userType,
                     firstName       : req.body.firstName,
                     lastName        : req.body.lastName || '',
                     email           : req.body.email,
