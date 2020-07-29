@@ -68,15 +68,9 @@ let userSchema = new Schema ( {
           },
 
           additionalData :{
-               dob : {
-                    type : Date
-               },
-               adharCard : {
-                    type : Number
-               },
-               accountNo : {
-                    type : Number
-               }
+               dob            : Date,
+               adharCard      : Number,
+               accountNo      : Number
           },
 
           reference : {

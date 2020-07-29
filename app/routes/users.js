@@ -173,7 +173,7 @@ let setRouter = (app) =>{
 
 
     //get all data route
-    app.get(`${baseUrl}/getAll`,userController.getAllData);
+    app.get(`${baseUrl}/getAllProfiles`,userController.getUsersList);
 
     /**
 	 * @api {get} /api/v1/users/getAll Get all Users
@@ -213,7 +213,11 @@ let setRouter = (app) =>{
 
 
     //get userid  by name
-    app.post(`${baseUrl}/getUserIdByName`,userController.getUserId);
+	app.post(`${baseUrl}/getUserIdByName`,userController.getUserId);
+	
+
+	//update Profiles 
+	app.post(`${baseUrl}/updateProfile`,userController.updateProfile);
 
      //get userList
     app.get(`${baseUrl}/getUsersList`,userController.getUsersList);

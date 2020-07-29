@@ -14,36 +14,13 @@ const authModel = mongoose.model('Auth'); //Importing Models
 //User signup Function Starts here
 let signUpFn = (req,res) => {
     console.log(req.body);
-let createUser = () => {
-    return new Promise((resolve,reject)=>{
-        userModal.find({username:req.body.username})
-        .exec((err,retrievedUserData) => {
-            if(err){
-                let response = apiResponse.generate(true,'User creation error',500,null);
-                reject(response);
-            }else if(checkLib.isEmpty(retrievedUserData)){
-                
-                    resolve(retrievedUserData);
-        
-            }else{
-                logger.error('User cannot be created','UserCon : createUser',10);
-                let response = apiResponse.generate(true,'Username already exists',403,null);
-                reject(response);
-            }
-
-        });
-
-    }) //Promise ends here
-
-} //Create user function ends here
-
 //checkEmailAvailability
-let checkEmailAvailability = () =>{
+let checkPhoneAvailability = () =>{
     return new Promise((resolve,reject)=>{
-        userModal.findOne({email:req.body.email})
+        userModal.findOne({mobile:req.body.mobile})
         .exec((err,emailData)=>{
             if(err){
-                let response = apiResponse.generate(true,'User creation error',403,null);
+                let response = apiResponse.generate(true,'Profile creation error',403,null);
                 reject(response);
             }else if(checkLib.isEmpty(emailData)){
 
@@ -52,19 +29,26 @@ let checkEmailAvailability = () =>{
                     
                     userId          : shortId.generate(),
                     username        : req.body.username,
-                    password        : passwordLib.hashpassword(req.body.password),
+                    password        : checkLib.isEmpty(req.body.password) ? passwordLib.hashpassword('user@123') :passwordLib.hashpassword(req.body.password),
                     userType        : req.body.userType,
-                    firstName       : req.body.firstName,
-                    lastName        : req.body.lastName || '',
-                    email           : req.body.email,
-                    mobile          : req.body.mobile
+                    firstName       : req.body.firstName || '',
+                    fatherName      : req.body.fatherName || '',
+                    email           : req.body.email || '',
+                    mobile          : req.body.mobile,
+                    additionalData  :{
+                                      dob : req.body.db,
+                                      adharCard : req.body.adhar,
+                                      accountNo : req.body.account
+                                     },
+                    reference       : req.body.reference,
+                    entrySide       : req.body.entrySide               
 
                 });// New user model ends here 
 
                 //Saving data to DB
                 newUser.save((err,newUserData)=>{
                     if(err){
-                        let response = apiResponse.generate(true,'User creation error,',403,null);
+                        let response = apiResponse.generate(true,'Profile creation error,',403,null);
                          reject(response);
                     }else{
                         let newUserObj = newUserData.toObject();
@@ -75,8 +59,8 @@ let checkEmailAvailability = () =>{
 
             }else{
 
-                logger.error('Email exists','UserCon : checkEmailAvailability',10);
-                let response = apiResponse.generate(true,'Email already exists',403,null);
+                logger.error('Phone number exists','UserCon : checkPhoneAvailability',10);
+                let response = apiResponse.generate(true,'Phone no. already exists',403,null);
                 reject(response);
 
             }
@@ -91,13 +75,12 @@ let checkEmailAvailability = () =>{
 
 
     // promise functions starts
-    createUser(req,res)
-    .then(checkEmailAvailability)
+    checkPhoneAvailability(req,res)
     .then((resolve) =>{
         delete resolve.password;
         delete resolve._id;
         delete resolve.__v;
-        let apiresponse = apiResponse.generate(false,'User created',200,resolve);
+        let apiresponse = apiResponse.generate(false,'Profile created',200,resolve);
         res.send(apiresponse);
     })
     .catch(err => {
@@ -398,6 +381,8 @@ let getAllData = (req,res) => {
 
     let getUsersList = (req,res) =>{
         userModal.find()
+            .select('-__v -_id -password')
+            .lean()
             .exec((err,result)=>{
             // console.log(result);
             if(err){
@@ -407,6 +392,8 @@ let getAllData = (req,res) => {
                 let response = apiResponse.generate(true,'User data not found',400,null);
                 res.send(response);
             }else{
+
+                
                 let response = apiResponse.generate(false,'User data found',200,result);
                 res.send(response);
             }
@@ -465,6 +452,36 @@ let getAllData = (req,res) => {
 
     }
 
+
+
+   let updateProfile = (req,res)=>{
+       userModal.update({userId:req.body.userId},{
+
+                    username        : req.body.username,
+                    firstName       : req.body.firstName || '',
+                    fatherName      : req.body.fatherName,
+                    email           : req.body.email || '',
+                    mobile          : req.body.mobile,
+                    additionalData  :{
+                                      dob : req.body.db,
+                                      adharCard : req.body.adhar,
+                                      accountNo : req.body.account
+                                     },
+                    reference       : req.body.reference,
+                    entrySide       : req.body.entrySide  
+
+
+       }).exec((err,data)=>{
+           if(err){
+            let response = apiResponse.generate(true,'Data updation error',500,null);
+            res.send(response);
+           }else{
+            let response = apiResponse.generate(false,'Data updated successfully',200,data);
+            res.send(response);
+            }
+       })  
+    } //Update Profile ends here
+
 module.exports = {
     signUpFn         : signUpFn,
     signInFn         : signInFn,
@@ -472,5 +489,6 @@ module.exports = {
     getUserId        : getUserId,
     getUsersList     : getUsersList,
     resetPassword    : resetPassword,
-    UpdateNewPassword : UpdateNewPassword
+    UpdateNewPassword : UpdateNewPassword,
+    updateProfile     : updateProfile
 }
