@@ -5,6 +5,12 @@ Schema = mongoose.Schema;
 
 let userSchema = new Schema ( {
 
+        empid : {
+
+             type : Number
+             
+        },
+
         userId  : {
 
              type        : String,
@@ -70,7 +76,8 @@ let userSchema = new Schema ( {
           additionalData :{
                dob            : Date,
                adharCard      : Number,
-               accountNo      : Number
+               accountNo      : Number,
+               ifsc           : String
           },
 
           reference : {

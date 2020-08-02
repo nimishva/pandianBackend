@@ -11,7 +11,7 @@ let setRouter = (app) =>{
 
     //Routes 
     //Signup route
-    app.post(`${baseUrl}/signUp`,userController.signUpFn);
+    app.post(`${baseUrl}/signUp`,userController.getEmployeeId,userController.signUpFn);
 
     /**
 	 * @api {get} /api/v1/users/signup New User Signup
@@ -219,8 +219,14 @@ let setRouter = (app) =>{
 	//update Profiles 
 	app.post(`${baseUrl}/updateProfile`,userController.updateProfile);
 
+	//delete Profiles 
+	app.post(`${baseUrl}/deleteProfile`,userController.deleteProfile);
+
      //get userList
-    app.get(`${baseUrl}/getUsersList`,userController.getUsersList);
+	app.get(`${baseUrl}/getUsersList`,userController.getUsersList);
+	
+
+	app.get(`${baseUrl}/getLastInsertedId`,userController.getEmployeeId);
 
 };
 

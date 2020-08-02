@@ -13,7 +13,6 @@ const authModel = mongoose.model('Auth'); //Importing Models
 
 //User signup Function Starts here
 let signUpFn = (req,res) => {
-    console.log(req.body);
 //checkEmailAvailability
 let checkPhoneAvailability = () =>{
     return new Promise((resolve,reject)=>{
@@ -23,10 +22,11 @@ let checkPhoneAvailability = () =>{
                 let response = apiResponse.generate(true,'Profile creation error',403,null);
                 reject(response);
             }else if(checkLib.isEmpty(emailData)){
-
-
+            
+                console.log("Emp ",req.newEmpId);
                 let newUser = new userModal({
                     
+                    empid           : req.newEmpId,
                     userId          : shortId.generate(),
                     username        : req.body.username,
                     password        : checkLib.isEmpty(req.body.password) ? passwordLib.hashpassword('user@123') :passwordLib.hashpassword(req.body.password),
@@ -38,7 +38,8 @@ let checkPhoneAvailability = () =>{
                     additionalData  :{
                                       dob : req.body.db,
                                       adharCard : req.body.adhar,
-                                      accountNo : req.body.account
+                                      accountNo : req.body.account,
+                                      ifsc      : req.body.ifsc
                                      },
                     reference       : req.body.reference,
                     entrySide       : req.body.entrySide               
@@ -455,7 +456,10 @@ let getAllData = (req,res) => {
 
 
    let updateProfile = (req,res)=>{
-       userModal.update({userId:req.body.userId},{
+
+    console.log(req.body);
+
+       userModal.updateOne({userId:req.body.userId},{
 
                     username        : req.body.username,
                     firstName       : req.body.firstName || '',
@@ -465,7 +469,8 @@ let getAllData = (req,res) => {
                     additionalData  :{
                                       dob : req.body.db,
                                       adharCard : req.body.adhar,
-                                      accountNo : req.body.account
+                                      accountNo : req.body.account,
+                                      ifsc : req.body.ifsc
                                      },
                     reference       : req.body.reference,
                     entrySide       : req.body.entrySide  
@@ -482,13 +487,45 @@ let getAllData = (req,res) => {
        })  
     } //Update Profile ends here
 
+
+
+    let deleteProfile = (req,res)=>{
+
+        console.log(req.body);
+        
+           userModal.deleteOne({userId:req.body.userid})
+           .exec((err,data)=>{
+               if(err){
+                let response = apiResponse.generate(true,'Profile deletion error error',500,null);
+                res.send(response);
+               }else{
+                let response = apiResponse.generate(false,'Profile deleted successfully',200,data);
+                res.send(response);
+                }
+           })  
+        } //Update Profile ends here
+
+
+
+        let getEmployeeId = (req,res,next)=>{
+            userModal.find({}).sort({_id:-1}).limit(1)
+            .exec((err,data)=>{
+               req.newEmpId = data[0].empid + 1;
+               next();
+            })
+        }
+
+
+
 module.exports = {
-    signUpFn         : signUpFn,
-    signInFn         : signInFn,
-    getAllData       : getAllData,
-    getUserId        : getUserId,
-    getUsersList     : getUsersList,
-    resetPassword    : resetPassword,
+    signUpFn          : signUpFn,
+    signInFn          : signInFn,
+    getAllData        : getAllData,
+    getUserId         : getUserId,
+    getUsersList      : getUsersList,
+    resetPassword     : resetPassword,
     UpdateNewPassword : UpdateNewPassword,
-    updateProfile     : updateProfile
+    updateProfile     : updateProfile,
+    deleteProfile     : deleteProfile,
+    getEmployeeId
 }
