@@ -95,14 +95,16 @@ let checkPhoneAvailability = () =>{
 //Login function 
 
 let signInFn = (req,res) => {
-
+    console.log(req.body.username);
     let validateUser = () => {
         return new Promise((resolve,reject)=>{
-            userModal.findOne({username:req.body.username})
+
+            userModal.find({mobile:Number(req.body.username)})
             .exec((err,retrievedUserData)=>{
+                console.log(retrievedUserData);
                 if(err){
-                    let apiResponse = apiResponse.generate(true,'User data cant be fetched from DB',403,null);
-                    reject(apiResponse);
+                    let response = apiResponse.generate(true,'User data cant be fetched from DB',403,null);
+                    reject(response);
                 }else if(checkLib.isEmpty(retrievedUserData)){
                     let response = apiResponse.generate(true,'User details not found',403,null);
                     reject(response);
@@ -110,19 +112,22 @@ let signInFn = (req,res) => {
                     resolve(retrievedUserData);
                 }
             });
+
         }) //Promise ends 
 
 
     } //ValidateUser Fn ends
 
     let validatePassword = (retrievedUserData)=>{
+        console.log(retrievedUserData)
         return new Promise((resolve,reject)=>{
-            passwordLib.comparePassword(req.body.password,retrievedUserData.password,(err,isMatching)=>{
+            passwordLib.comparePassword(req.body.password,retrievedUserData[0].password,(err,isMatching)=>{
                 if(err){
-                    let apiResponse = apiResponse.generate(true,'Login failed',500,null);
-                    reject(apiResponse);
+                    console.log(err);
+                    let response = apiResponse.generate(true,'Login failed',500,null);
+                    reject(response);
                 }else if(isMatching){
-                    let userDataObj = retrievedUserData.toObject();
+                    let userDataObj = retrievedUserData[0].toObject();
                     delete userDataObj.password
                     delete userDataObj._id
                     delete userDataObj.__v
@@ -142,8 +147,8 @@ let signInFn = (req,res) => {
         return new Promise((resolve,reject)=>{
             tokenLib.generate(userData,(err,tokenData)=>{
               if(err){
-                let apiResponse = apiResponse.generate(true,'Token Generation failed',500,null);
-                reject(apiResponse);
+                let res = apiResponse.generate(true,'Token Generation failed',500,null);
+                reject(res);
               }else{
                 tokenData.userId    = userData.userId;
                 tokenData.userData  = userData;
