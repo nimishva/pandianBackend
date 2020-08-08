@@ -282,88 +282,88 @@ let getAllData = (req,res) => {
     } //Get all data Function ends here
 
 
-    //reset Password 
-    let resetPassword = (req,res) =>{
+    // //reset Password 
+    // let resetPassword = (req,res) =>{
 
-        let validateEmail = () =>{
-            // console.log(req.body);
-        return new Promise((resolve,reject)=>{
+    //     let validateEmail = () =>{
+    //         // console.log(req.body);
+    //     return new Promise((resolve,reject)=>{
        
-        userModal.find({email:req.body.email})
-        .exec((err,result)=>{
-            if(err){
-                let response = apiResponse.generate(true,'Data Fetching error,Please try again',500,null);
-                reject(response);
-            }else if(checkLib.isEmpty(result)){
-                let response = apiResponse.generate(true,'Email not found',403,null);
-                reject(response);
-            }else{
-                resolve(result);
-                }
-              })
+    //     userModal.find({email:req.body.email})
+    //     .exec((err,result)=>{
+    //         if(err){
+    //             let response = apiResponse.generate(true,'Data Fetching error,Please try again',500,null);
+    //             reject(response);
+    //         }else if(checkLib.isEmpty(result)){
+    //             let response = apiResponse.generate(true,'Email not found',403,null);
+    //             reject(response);
+    //         }else{
+    //             resolve(result);
+    //             }
+    //           })
      
-             }) //End of promise
+    //          }) //End of promise
 
-            } //End of Validating password
+    //         } //End of Validating password
 
 
-    let generateToken = (userData)=>{
-        return new Promise((resolve,reject)=>{
-            tokenLib.generate(userData,(err,tokenData)=>{
-              if(err){
-                let apiResponse = apiResponse.generate(true,'Token Generation failed',500,null);
-                reject(apiResponse);
-              }else{
-                tokenData.userId    = userData.userId;
-                tokenData.userData  = userData;
-                resolve(tokenData);
-              }            
-            })//Token Generation ends here 
-        })
-    } //Generate Token ends here
+    // let generateToken = (userData)=>{
+    //     return new Promise((resolve,reject)=>{
+    //         tokenLib.generate(userData,(err,tokenData)=>{
+    //           if(err){
+    //             let apiResponse = apiResponse.generate(true,'Token Generation failed',500,null);
+    //             reject(apiResponse);
+    //           }else{
+    //             tokenData.userId    = userData.userId;
+    //             tokenData.userData  = userData;
+    //             resolve(tokenData);
+    //           }            
+    //         })//Token Generation ends here 
+    //     })
+    // } //Generate Token ends here
 
-    let sendMail = (tokenData)=>{
-        return new Promise((resolve,reject)=>{
-        let mailData = {
+    // let sendMail = (tokenData)=>{
+    //     return new Promise((resolve,reject)=>{
+    //     let mailData = {
 
-            subject  : "Password reset link",
-            message  : `<h1>Hello</h1>
-                       <p>You are recieving this mail, because we have recieved a password reset request for your account</p>
+    //         subject  : "Password reset link",
+    //         message  : `<h1>Hello</h1>
+    //                    <p>You are recieving this mail, because we have recieved a password reset request for your account</p>
 
-                       <p><a href='http://resfeber.online/resetpassword/${tokenData.token}'>Reset Password</a></p>
+    //                    <p><a href='http://resfeber.online/resetpassword/${tokenData.token}'>Reset Password</a></p>
 
-                       <p>Regards<br>
-                          <b>Team Resfeber</b>
-                       </p>`,
-            rcvr : tokenData.userData[0].email,  
+    //                    <p>Regards<br>
+    //                       <b>Team Resfeber</b>
+    //                    </p>`,
+    //         rcvr : tokenData.userData[0].email,  
             
-           } //Mail Data Object
+    //        } //Mail Data Object
 
-          let response =  mailLib.sendMail(mailData);
-          if(response){
-            resolve(tokenData);
-          }else{
+    //       let response =  mailLib.sendMail(mailData);
+    //       if(response){
+    //         resolve(tokenData);
+    //       }else{
           
-            let apiResponse = apiResponse.generate(true,'Mail sending error,Please try again',500,null);
-            reject(apiResponse);
-          }
+    //         let apiResponse = apiResponse.generate(true,'Mail sending error,Please try again',500,null);
+    //         reject(apiResponse);
+    //       }
 
-        }) //Promise
-    } //Send mail
+    //     }) //Promise
+    // } //Send mail
 
-    validateEmail(req,res)
-    .then(generateToken)
-    .then(sendMail)
-    .then(resolve=>{
-        let response = apiResponse.generate(false,'Mail has been sent',200,resolve);
-        res.send(response);
-    }).catch((err)=>{
-        console.log(err);
-        //res.status(err.status)
-        res.send(err);
-    }); //Promise calls ends 
+    // validateEmail(req,res)
+    // .then(generateToken)
+    // .then(sendMail)
+    // .then(resolve=>{
+    //     let response = apiResponse.generate(false,'Mail has been sent',200,resolve);
+    //     res.send(response);
+    // }).catch((err)=>{
+    //     console.log(err);
+    //     //res.status(err.status)
+    //     res.send(err);
+    // }); //Promise calls ends 
 
-    } //Main Reset password
+    // } //Main Reset password
 
 
     let getUserId = (req,res) =>{
@@ -522,6 +522,157 @@ let getAllData = (req,res) => {
 
 
 
+
+
+
+//changePassword Function Starts here
+let changePassword = (req,res) => {
+    //checkEmailAvailability
+    console.log(req.body);
+    let validateUser = () => {
+        return new Promise((resolve,reject)=>{
+            userModal.find({userId:req.body.userId})
+            .exec((err,retrievedUserData)=>{
+                console.log(retrievedUserData);
+                if(err){
+                    let response = apiResponse.generate(true,'User data cant be fetched from DB',403,null);
+                    reject(response);
+                }else if(checkLib.isEmpty(retrievedUserData)){
+                    let response = apiResponse.generate(true,'User details not found',403,null);
+                    reject(response);
+                }else{
+                    resolve(retrievedUserData);
+                }
+            });
+        }) //Promise ends
+    } //ValidateUser Fn ends
+
+    let validatePassword = (retrievedUserData)=>{
+        console.log(retrievedUserData)
+        return new Promise((resolve,reject)=>{
+            passwordLib.comparePassword(req.body.oldPass,retrievedUserData[0].password,(err,isMatching)=>{
+                if(err){
+                    console.log(err);
+                    let response = apiResponse.generate(true,'Server error',500,null);
+                    reject(response);
+                }else if(isMatching){
+                    let userDataObj = retrievedUserData[0].toObject();
+                    delete userDataObj.password
+                    delete userDataObj._id
+                    delete userDataObj.__v
+                    delete userDataObj.createdOn
+                    resolve(userDataObj);
+                }else{
+                //    console.log(retrievedUserData);
+                console.log(isMatching);
+                    let response = apiResponse.generate(true,'Old Password not matching',400,null);
+                    reject(response);
+                }
+            })// Password check ends here 
+
+        }) //Prominse ends
+    } //validatePassword ends
+
+
+    let updatePassword = (userData)=>{
+        return new Promise((resolve,reject)=>{
+            userModal.updateOne(
+                {userId:userData.userId},
+                {$set:{password:passwordLib.hashpassword(req.body.password)}})
+                .exec((err,data)=>{
+                    if(err){
+                        let response = apiResponse.generate(true,'Server error',500,null);
+                        reject(response);
+                    }else{
+                        resolve(data);
+                    }
+                })
+        })//Promise Ends here
+
+    }
+    
+    
+    
+        // promise functions starts
+        validateUser(req,res)
+        .then(validatePassword)
+        .then(updatePassword)
+        .then((resolve) =>{
+            delete resolve.password;
+            delete resolve._id;
+            delete resolve.__v;
+            let apiresponse = apiResponse.generate(false,'Password Updated',200,resolve);
+            res.send(apiresponse);
+        })
+        .catch(err => {
+            console.log(err);
+            res.send(err);
+        })
+    
+    } //Change password Function ends here
+
+
+
+
+    let resetPassword = (req,res) => {
+        //checkEmailAvailability
+        console.log(req.body);
+        let validateUser = () => {
+            return new Promise((resolve,reject)=>{
+                userModal.findOne({mobile:req.body.mobile})
+                .exec((err,retrievedUserData)=>{
+                    console.log(retrievedUserData);
+                    if(err){
+                        let response = apiResponse.generate(true,'User data cant be fetched from DB',403,null);
+                        reject(response);
+                    }else if(checkLib.isEmpty(retrievedUserData)){
+                        let response = apiResponse.generate(true,'User details not found',403,null);
+                        reject(response);
+                    }else{
+                        resolve(retrievedUserData);
+                    }
+                });
+            }) //Promise ends
+        } //ValidateUser Fn ends
+    
+        let updatePassword = (userData)=>{
+            return new Promise((resolve,reject)=>{
+                userModal.updateOne(
+                    {userId:userData.userId},
+                    {$set:{password:passwordLib.hashpassword(req.body.password)}})
+                    .exec((err,data)=>{
+                        if(err){
+                            let response = apiResponse.generate(true,'Server error',500,null);
+                            reject(response);
+                        }else{
+                            resolve(data);
+                        }
+                    })
+            })//Promise Ends here
+    
+        }
+        
+        
+        
+            // promise functions starts
+            validateUser(req,res)
+            .then(updatePassword)
+            .then((resolve) =>{
+                delete resolve.password;
+                delete resolve._id;
+                delete resolve.__v;
+                let apiresponse = apiResponse.generate(false,'Password Resetted',200,resolve);
+                res.send(apiresponse);
+            })
+            .catch(err => {
+                console.log(err);
+                res.send(err);
+            })
+        
+        } //Change password Function ends here
+
+
+
 module.exports = {
     signUpFn          : signUpFn,
     signInFn          : signInFn,
@@ -532,5 +683,6 @@ module.exports = {
     UpdateNewPassword : UpdateNewPassword,
     updateProfile     : updateProfile,
     deleteProfile     : deleteProfile,
-    getEmployeeId
+    getEmployeeId,
+    changePassword
 }

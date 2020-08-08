@@ -133,7 +133,7 @@ let setRouter = (app) =>{
 
 
     //Forgot password
-    app.post(`${baseUrl}/resetpassword`,userController.UpdateNewPassword);
+   // app.post(`${baseUrl}/resetpassword`,userController.UpdateNewPassword);
 
      /**
 	 * @api {get} /api/v1/users/resetpassword Reset Password
@@ -227,6 +227,11 @@ let setRouter = (app) =>{
 	
 
 	app.get(`${baseUrl}/getLastInsertedId`,userController.getEmployeeId);
+
+
+	app.post(`${baseUrl}/changePassword`,userController.changePassword);
+
+	app.post(`${baseUrl}/resetPassword`,userController.resetPassword);
 
 };
 
