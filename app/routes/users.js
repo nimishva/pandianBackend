@@ -233,6 +233,8 @@ let setRouter = (app) =>{
 
 	app.post(`${baseUrl}/resetPassword`,userController.resetPassword);
 
+	app.post(`${baseUrl}/approveUser`,userController.approveUser);
+
 };
 
 

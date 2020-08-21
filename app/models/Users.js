@@ -85,6 +85,10 @@ let userSchema = new Schema ( {
           },
           entrySide : {
                type : String
+          },
+          approved : {
+               type: Boolean,
+               default : false
           }
 
 });

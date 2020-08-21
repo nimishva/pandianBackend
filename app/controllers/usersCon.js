@@ -109,7 +109,14 @@ let signInFn = (req,res) => {
                     let response = apiResponse.generate(true,'User details not found',403,null);
                     reject(response);
                 }else{
-                    resolve(retrievedUserData);
+
+                    if(retrievedUserData[0].approved == true){
+                        resolve(retrievedUserData);
+                    }else{
+                        let response = apiResponse.generate(true,'User not approved,contact admin',403,null);
+                        reject(response);
+                    }
+                    
                 }
             });
 
@@ -386,7 +393,14 @@ let getAllData = (req,res) => {
 
 
     let getUsersList = (req,res) =>{
-        userModal.find()
+
+        console.log("Query",req.query.user);
+        let query;
+        req.query.user == 'admin'
+            ?query = {}
+            :query = { approved : true }
+        
+        userModal.find(query)
             .select('-__v -_id -password')
             .lean()
             .exec((err,result)=>{
@@ -673,6 +687,21 @@ let changePassword = (req,res) => {
 
 
 
+        let approveUser = (req,res)=>{
+            userModal.updateOne({userId:req.body.userid},{$set:{approved:true}})
+            .exec((err,data)=>{
+                if(err){
+                    let response = apiResponse.generate(true,'Status updation error',500,null);
+                    res.send(response);
+                }else{
+                    let response = apiResponse.generate(false,'User status updated',200,data);
+                    res.send(response);
+                }
+            })
+        }
+
+
+
 module.exports = {
     signUpFn          : signUpFn,
     signInFn          : signInFn,
@@ -684,5 +713,6 @@ module.exports = {
     updateProfile     : updateProfile,
     deleteProfile     : deleteProfile,
     getEmployeeId,
-    changePassword
+    changePassword,
+    approveUser
 }
